@@ -296,6 +296,11 @@ declare module 'binance-api-node' {
       callback: (ticker: Ticker) => void,
     ) => ReconnectingWebSocketHandler
     allTickers: (callback: (tickers: Ticker[]) => void) => ReconnectingWebSocketHandler
+    bookTicker: (
+      pair: string | string[],
+      callback: (bookTicker: BookTicker) => void,
+    ) => ReconnectingWebSocketHandler
+    allBookTickers: (callback: (bookTicker: BookTicker) => void) => ReconnectingWebSocketHandler
     candles: (
       pair: string | string[],
       period: string,
@@ -610,6 +615,15 @@ declare module 'binance-api-node' {
     firstTradeId: number
     lastTradeId: number
     totalTrades: number
+  }
+
+  export interface BookTicker {
+    updateId: number
+    symbol: string
+    bestBid: string
+    bestBidQty: string
+    bestAsk: string
+    bestAskQty: string
   }
 
   export interface Candle {

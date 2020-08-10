@@ -401,6 +401,40 @@ const user = (opts, variator) => cb => {
   return makeStream(false)
 }
 
+const bookTickerTransform = m => ({
+  updateId: m.u,
+  symbol: m.s,
+  bestBid: m.b,
+  bestBidQty: m.B,
+  bestAsk: m.a,
+  bestAskQty: m.A,
+})
+
+const allBookTickers = cb => {
+  const w = new openWebSocket(`${BASE}/!bookTicker`)
+
+  w.onmessage = msg => {
+    cb(bookTickerTransform(JSON.parse(msg.data)))
+  }
+
+  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+}
+
+const bookTicker = (payload, cb) => {
+  const cache = (Array.isArray(payload) ? payload : [payload]).map(symbol => {
+    const w = openWebSocket(`${BASE}/${symbol.toLowerCase()}@bookTicker`)
+
+    w.onmessage = msg => {
+      cb(bookTickerTransform(JSON.parse(msg.data)))
+    }
+
+    return w
+  })
+
+  return options =>
+    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+}
+
 export default opts => ({
   depth,
   partialDepth,
@@ -409,6 +443,8 @@ export default opts => ({
   aggTrades,
   ticker,
   allTickers,
+  bookTicker,
+  allBookTickers,
   user: user(opts),
   marginUser: user(opts, 'margin'),
   futuresUser: user(opts, 'futures'),

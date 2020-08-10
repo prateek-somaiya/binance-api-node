@@ -218,6 +218,24 @@ test('[WS] allTicker', t => {
   })
 })
 
+test('[WS] bookTicker', t => {
+  return new Promise(resolve => {
+    client.ws.bookTicker('ETHBTC', ticker => {
+      checkFields(t, ticker, ['updateId', 'symbol', 'bestBid', 'bestBidQty', 'bestAsk', 'bestAskQty'])
+      resolve()
+    })
+  })
+})
+
+test('[WS] allBookTicker', t => {
+  return new Promise(resolve => {
+    client.ws.allBookTickers(ticker => {
+      checkFields(t, ticker, ['updateId', 'symbol', 'bestBid', 'bestBidQty', 'bestAsk', 'bestAskQty'])
+      resolve()
+    })
+  })
+})
+
 test('[WS] candles', t => {
   try {
     client.ws.candles('ETHBTC', d => d)
